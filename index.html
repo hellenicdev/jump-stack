@@ -574,11 +574,6 @@
     <div id="stats-overlay">
         <div class="card">
             <h2 id="stats-title" style="margin-bottom:20px">Stats</h2>
-            <div id="migrate-banner" class="migrate-notice" style="display:none">
-                <p>We recently moved! Tap below if you want your old stats and trophies.</p>
-                <button class="btn-migrate" id="migrate-btn">Retrieve Old Stats</button>
-                <button class="migrate-dismiss" id="migrate-dismiss">No thanks</button>
-            </div>
             <div class="stats-section" id="stats-run-section" style="display:none">
                 <div class="stats-section-title">Since last win</div>
                 <div class="stats-grid">
@@ -2545,27 +2540,6 @@ settingsHandler(document.getElementById('stats-done'), function () {
     statsOverlay.classList.remove('show');
 });
 
-/* ── Migration banner in stats modal ── */
-var migrateBanner = document.getElementById('migrate-banner');
-var isInstalledApp = window.matchMedia('(display-mode: standalone)').matches
-    || window.navigator.standalone === true
-    || window.matchMedia('(display-mode: fullscreen)').matches
-    || document.referrer.indexOf('android-app://') === 0;
-if (!localStorage.getItem('100j_migrated') && !isInstalledApp) migrateBanner.style.display = '';
-
-settingsHandler(document.getElementById('migrate-btn'), function () {
-    window.location.href = 'https://100jumps.org/migrate.html?return=' + encodeURIComponent(window.location.origin + window.location.pathname);
-});
-settingsHandler(document.getElementById('migrate-dismiss'), function () {
-    try { localStorage.setItem('100j_migrated', '1'); } catch (_) {}
-    migrateBanner.style.display = 'none';
-});
-
-if (window.__migratedJustNow) {
-    statsOpen = true;
-    renderStats();
-    statsOverlay.classList.add('show');
-}
 
 statsOverlay.addEventListener('click', function (e) {
     if (e.target === statsOverlay) {
