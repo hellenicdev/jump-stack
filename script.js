@@ -1,14 +1,12 @@
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-7ZW11J5QKQ');
-      gtag('config', 'G-9K0TYZFZS2');
-	  
-	  
-	  
 /* ════════════════════════════════════════════════════════
-   ANALYTICS — Lightweight GA4 wrapper (gtag.js)
+   ANALYTICS — GA4 gtag initialization & wrapper
    ════════════════════════════════════════════════════════ */
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-7ZW11J5QKQ');
+gtag('config', 'G-9K0TYZFZS2');
+
 var analyticsEnabled = true;
 
 function safeTrack(eventName, params) {
@@ -1966,60 +1964,13 @@ if (restoreState()) {
     requestAnimationFrame(loop);
 }
 
-// ── App download banner: iOS → App Store, Android → Play Store, Desktop → both ──
+// ── Show footer when not in PWA mode ──
 (function() {
-    var banner = document.getElementById('appstore-banner');
-    var closeBtn = document.getElementById('ab-close');
-    var abTitle = document.getElementById('ab-title');
-    var abSub = document.getElementById('ab-sub');
-    var abCta = document.getElementById('ab-cta');
-    if (!banner || !closeBtn) return;
-
-    var APP_STORE = 'https://apps.apple.com/bz/app/100-jumps/id6760545256';
-    var PLAY_STORE = 'https://play.google.com/store/apps/details?id=org.app_100jumps.twa';
-
     var ua = navigator.userAgent || '';
-    var isAndroid = /Android/i.test(ua);
-    var isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    var isDesktop = !isAndroid && !isIOS && !/Mobile/i.test(ua);
     var isPWA = window.matchMedia('(display-mode: standalone)').matches
         || window.navigator.standalone === true
         || window.matchMedia('(display-mode: fullscreen)').matches
         || document.referrer.indexOf('android-app://') === 0;
-
     var footer = document.getElementById('bz-footer');
     if (footer && !isPWA) { footer.style.display = 'block'; }
-
-    var dismissed = false;
-    try { dismissed = localStorage.getItem('ab_dismissed') === '1'; } catch(e) {}
-
-    if (isPWA || dismissed) return;
-
-    if (isIOS) {
-        abTitle.textContent = 'Get Jump Stack on App Store';
-        abSub.textContent = 'Download the free iOS app';
-        abCta.innerHTML = '<a class="ab-get" href="' + APP_STORE + '" target="_blank" rel="noopener">GET</a>';
-    } else if (isAndroid) {
-        abTitle.textContent = 'Get Jump Stack on Play Store';
-        abSub.textContent = 'Download the free Android app';
-        abCta.innerHTML = '<a class="ab-get" href="' + PLAY_STORE + '" target="_blank" rel="noopener">GET</a>';
-    } else if (isDesktop) {
-        abTitle.textContent = 'Get Jump Stack on your phone';
-        abSub.textContent = 'Download the free app';
-        abCta.innerHTML = '<span class="ab-buttons">'
-            + '<a class="ab-get" href="' + APP_STORE + '" target="_blank" rel="noopener">iOS</a>'
-            + '<a class="ab-get" href="' + PLAY_STORE + '" target="_blank" rel="noopener">Android</a>'
-            + '</span>';
-    } else {
-        return;
-    }
-
-    setTimeout(function() { banner.classList.add('show'); }, 2000);
-
-    closeBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        banner.classList.remove('show');
-        banner.classList.add('hide');
-        try { localStorage.setItem('ab_dismissed', '1'); } catch(e) {}
-    });
 })();

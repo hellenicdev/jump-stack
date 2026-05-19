@@ -1,0 +1,21 @@
+{
+    "name": "Jump Stack",
+    "short_name": "Jump Stack",
+    "description": "Hold to charge, release to jump. Land on 100 platforms to win!",
+    "start_url": "/jump-stack/",
+    "scope": "/jump-stack/",
+    "display": "standalone",
+    "background_color": "#EDF2F8",
+    "theme_color": "#6366f1",
+    "orientation": "portrait",
+    "categories": ["games", "arcade"],
+    "icons": [
+        {
+            "src": "logo.webp",
+            "sizes": "512x512",
+            "type": "image/webp",
+            "purpose": "any maskable"
+        }
+    ],
+    "screenshots": []
+}
