@@ -1,4 +1,5 @@
 # Jump Stack
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/S6S31XB030)
 
 A mobile-first HTML5 canvas game where precision and timing are everything. Hold to charge your jump, release to launch — land on 100 platforms to win, but one miss and it's over.
 
