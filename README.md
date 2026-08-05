@@ -24,4 +24,4 @@ A mobile-first HTML5 canvas game where precision and timing are everything. Hold
 
 ## Play
 
-Play online at: https://hellenicdev.github.io/jump-stack
+Play online at: https://hellenicdev.eu/jump-stack
