@@ -5,7 +5,6 @@ window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-7ZW11J5QKQ');
-gtag('config', 'G-9K0TYZFZS2');
 
 var analyticsEnabled = true;
 
@@ -88,6 +87,7 @@ function trackAchievementUnlock(achievementId) {
  *  'falling'  — Overshot the next platform, falling to death
  *  'landed'   — Brief pause after landing before camera moves (GAMEPLAY.landPause)
  *  'panning'  — Camera sliding to frame the next platform after landing
+ *  'maxpause' — Dramatic pause before the max-power jump launches
  *  'gameover' — Dead, showing game over overlay
  */
 
@@ -196,9 +196,9 @@ const PHYSICS = {
  * GENERATION — Difficulty curve for platform placement.
  *
  * Instead of flat random ranges, getDifficulty(jumpN) returns generation
- * parameters that scale with jump number. Six tiers blend smoothly:
- *   1–10  very easy   |  11–25 easy   |  26–45 medium
- *   46–70 hard        |  71–90 very hard  |  91–101 peak
+ * parameters that scale with jump number. Tiers blend smoothly:
+ *   1–5 very easy | 6–10 easy | 11–25 medium | 26–45 hard
+ *   46–70 very hard | 71–90 intense | 91–98 finale | 99–101 final sprint
  *
  * "Confidence traps" occasionally appear: 2–3 easy jumps then one hard one.
  */
@@ -330,12 +330,14 @@ try {
     }
 } catch (_) {}
 applyTheme(settings.darkMode);
-_darkMQ.addEventListener('change', function (e) {
+function onDarkChange(e) {
     settings.darkMode = e.matches;
     applyTheme(settings.darkMode);
     saveSettings();
     if (typeof syncToggles === 'function') syncToggles();
-});
+}
+if (typeof _darkMQ.addEventListener === 'function') _darkMQ.addEventListener('change', onDarkChange);
+else _darkMQ.addListener(onDarkChange);
 function saveSettings() {
     try { localStorage.setItem('100j_settings', JSON.stringify(settings)); } catch (_) {}
 }
@@ -351,7 +353,7 @@ function loadAttempts(key) {
         if (_a) { attempts.active = _a.active || 0; attempts.total = _a.total || 0; }
     } catch (_) {}
 }
-loadAttempts('100j_attempts');
+loadAttempts(LEVELS[activeLevel].attemptsKey);
 function saveAttempts() {
     try { localStorage.setItem(LEVELS[activeLevel].attemptsKey, JSON.stringify(attempts)); } catch (_) {}
 }
@@ -403,7 +405,7 @@ function loadGameStats(key) {
         }
     } catch (_) {}
 }
-loadGameStats('100j_stats');
+loadGameStats(LEVELS[activeLevel].statsKey);
 function saveGameStats() {
     try { localStorage.setItem(LEVELS[activeLevel].statsKey, JSON.stringify(gameStats)); } catch (_) {}
 }
@@ -494,6 +496,7 @@ let wowTimer;        // >0 when character should show an 😮 face (close-edge l
 let wowEdgeDir;      // -1 = near left edge, +1 = near right edge
 let nearMissShake;   // >0 triggers a damped wobble on close-edge landings
 let inputBuffer;     // true while a press is buffered during a jump, waiting for landing
+let maxPauseTimer;   // Handle for the dramatic-pause jump timer (max-power release)
 
 /** getY(p) — Returns the Y position of a platform. */
 function getY(p) {
@@ -760,6 +763,7 @@ function init() {
     hudFadeAlpha = 1; winHudMode = false; smileTimer = 0; wowTimer = 0; wowEdgeDir = 1; nearMissShake = 0; inputBuffer = false;
     runSeed = Math.random().toString(36).substr(2, 8);
     runStartTime = Date.now();
+    maxPauseTimer = null;
     maxStreak = 0; totalPerfects = 0; totalLivesGained = 0;
     score = { remaining: GAMEPLAY.totalJumps };
     floats = []; ringPulse = null;
@@ -1456,7 +1460,7 @@ function saveState() {
         sessionStorage.setItem('100j', JSON.stringify({
             platforms, player, cam, score, state: 'idle',
             streak, achieveStreak, lives, completed, firstJump,
-            missedJump, allPerfect, newHighScore,
+            missedJump, allPerfect, newHighScore, W, H,
         }));
     } catch (_) { /* quota exceeded or private browsing — ignore */ }
 }
@@ -1469,6 +1473,8 @@ function restoreState() {
         const s = JSON.parse(raw);
         if (!s.platforms || !s.player) return false;
 
+        const savedW = s.W || 0;
+        const savedH = s.H || 0;
         resize();
         platforms = s.platforms;
         player = s.player;
@@ -1493,10 +1499,17 @@ function restoreState() {
         totalPerfects = totalPerfects || 0;
         totalLivesGained = totalLivesGained || 0;
 
-        // Rescale all positions from saved dimensions to current screen
-        const savedW = platforms[0] ? platforms[0].x / (25) : S;
-        // Positions were stored in absolute pixels — they'll match if screen
-        // size hasn't changed. If it has, the next resize() event will fix it.
+        // Rescale world positions from the saved screen size to the current one
+        if (savedW > 0 && savedH > 0 && (savedW !== W || savedH !== H)) {
+            const savedS = Math.min(Math.min(savedW, savedH) / 295, 1.7);
+            const sr = savedS > 0 ? S / savedS : 1;
+            const hr = H / savedH;
+            for (const p of platforms) { p.x *= sr; p.w *= sr; p.y *= hr; }
+            player.x *= sr;
+            player.y *= hr;
+            player.vx *= sr; player.vy *= hr;
+            cam.x *= sr; cam.start *= sr;
+        }
 
         modal.classList.remove('show');
         ensurePlatforms(cam.x);
@@ -1557,8 +1570,21 @@ function onDown(e) {
     }
 }
 
+function launchMaxJump() {
+    sfxJump();
+    unlockAchievement('fullSend');
+    player.vx = PHYSICS.maxVX * S;
+    player.vy = -(PHYSICS.minVY + (PHYSICS.maxVY - PHYSICS.minVY)) * S;
+    state = 'jumping';
+}
+
 function onUp(e) {
     e.preventDefault();
+    if (state === 'maxpause') {
+        clearTimeout(maxPauseTimer);
+        launchMaxJump();
+        return;
+    }
     if (state !== 'charging') { inputBuffer = false; return; }
 
     const cw = THEME.character.width * S;
@@ -1568,13 +1594,9 @@ function onUp(e) {
         addFloat('Really?', player.x + cw / 2, player.y - 10 * S, '#64748b', 14, 1.4);
         state = 'maxpause';
         power = 0;
-        setTimeout(function () {
+        maxPauseTimer = setTimeout(function () {
             if (state !== 'maxpause') return;
-            sfxJump();
-            unlockAchievement('fullSend');
-            player.vx = PHYSICS.maxVX * S;
-            player.vy = -(PHYSICS.minVY + (PHYSICS.maxVY - PHYSICS.minVY)) * S;
-            state = 'jumping';
+            launchMaxJump();
         }, 850);
         return;
     }
@@ -1667,7 +1689,10 @@ function syncToggles() {
     togSound.classList.toggle('on', settings.sound);
     togVib.classList.toggle('on', settings.vibration);
     togDark.classList.toggle('on', settings.darkMode);
-    volSlider.value = Math.round(settings.volume * 50);
+    togSound.setAttribute('aria-pressed', settings.sound);
+    togVib.setAttribute('aria-pressed', settings.vibration);
+    togDark.setAttribute('aria-pressed', settings.darkMode);
+    volSlider.value = Math.round(settings.volume * 100);
     volRow.style.display = settings.sound ? 'flex' : 'none';
 }
 syncToggles();
@@ -1675,7 +1700,7 @@ syncToggles();
 var volPreviewTimer = null;
 volSlider.addEventListener('input', function (e) {
     e.stopPropagation();
-    settings.volume = parseInt(volSlider.value, 10) / 50;
+    settings.volume = parseInt(volSlider.value, 10) / 100;
     saveSettings();
     initAudio();
     clearTimeout(volPreviewTimer);
@@ -1958,7 +1983,7 @@ resize();
 if (restoreState()) {
     requestAnimationFrame(loop);
 } else {
-    loadLevelStats(0);
+    loadLevelStats(activeLevel);
     init();
     lastTS = 0;
     requestAnimationFrame(loop);

@@ -6,7 +6,7 @@
     "scope": "/jump-stack/",
     "display": "standalone",
     "background_color": "#EDF2F8",
-    "theme_color": "#6366f1",
+    "theme_color": "#EDF2F8",
     "orientation": "portrait",
     "categories": ["games", "arcade"],
     "icons": [
