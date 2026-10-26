@@ -1,11 +1,7 @@
 /* ════════════════════════════════════════════════════════
-   ANALYTICS — GA4 gtag initialization & wrapper
+   ANALYTICS — event wrapper
+   gtag is provided by consent-analytics.js after consent
    ════════════════════════════════════════════════════════ */
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-7ZW11J5QKQ');
-
 var analyticsEnabled = true;
 
 function safeTrack(eventName, params) {
