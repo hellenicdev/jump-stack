@@ -473,3 +473,9 @@ body.dark { background: #111827; }
 }
 .dark .migrate-notice p { color: #a5b4fc; }
 .dark .migrate-dismiss { color: #6366f1; }
+
+button:focus-visible,
+a:focus-visible {
+    outline: 3px solid #4f8cff;
+    outline-offset: 3px;
+}

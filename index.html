@@ -34,7 +34,7 @@
     <meta name="apple-mobile-web-app-title" content="Jump Stack">
     <link rel="apple-touch-icon" href="logo.webp">
     <link rel="stylesheet" type="text/css" href="style.css">
-    <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="06e4a97f-2c34-41ed-8ab6-d53b581ff080" type="text/javascript" async></script>
+    <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="06e4a97f-2c34-41ed-8ab6-d53b581ff080" async></script>
     <script src="https://hellenicdev.eu/js/consent-analytics.js" data-ga-id="G-7ZW11J5QKQ" defer></script>
 
 </head>
@@ -42,18 +42,18 @@
 
 <div id="wrap">
     <canvas id="gc"></canvas>
-    <button id="settings-btn" aria-label="Settings">
+    <button type="button" id="settings-btn" aria-label="Settings">
         <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54A.48.48 0 0 0 13.92 2h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87a.49.49 0 0 0 .12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"/></svg>
     </button>
-    <button id="stats-btn" aria-label="Stats">
+    <button type="button" id="stats-btn" aria-label="Stats">
         <svg viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg>
     </button>
-    <div id="settings-overlay">
+    <div id="settings-overlay" role="dialog" aria-modal="true" aria-label="Settings">
         <div class="card">
             <h2 style="margin-bottom:18px">Settings</h2>
             <div class="toggle-row">
                 <span class="toggle-label">Sounds</span>
-                <button class="toggle on" id="tog-sound" aria-label="Toggle sound"></button>
+                <button type="button" class="toggle on" id="tog-sound" aria-label="Toggle sound"></button>
             </div>
             <div class="slider-row" id="vol-row">
                 <span class="toggle-label">Volume</span>
@@ -61,20 +61,20 @@
             </div>
             <div class="toggle-row">
                 <span class="toggle-label">Vibration</span>
-                <button class="toggle on" id="tog-vib" aria-label="Toggle vibration"></button>
+                <button type="button" class="toggle on" id="tog-vib" aria-label="Toggle vibration"></button>
             </div>
             <div class="toggle-row">
                 <span class="toggle-label">Dark Mode</span>
-                <button class="toggle" id="tog-dark" aria-label="Toggle dark mode"></button>
+                <button type="button" class="toggle" id="tog-dark" aria-label="Toggle dark mode"></button>
             </div>
             <a href="https://hellenicdev.eu/privacy-policy.html?utm_source=https://hellenicdev.eu/jump-stack/" class="toggle-row legal-row" style="text-decoration:none; color:inherit">
                 <span class="toggle-label">Privacy &amp; Terms</span>
                 <span style="font-size:18px; color:#7C8AA5; line-height:1">›</span>
             </a>
-            <button class="btn btn-main" id="settings-done" style="margin-top:18px">Done</button>
+            <button type="button" class="btn btn-main" id="settings-done" style="margin-top:18px">Done</button>
         </div>
     </div>
-    <div id="stats-overlay">
+    <div id="stats-overlay" role="dialog" aria-modal="true" aria-label="Stats">
         <div class="card">
             <h2 id="stats-title" style="margin-bottom:20px">Stats</h2>
             <div class="stats-section" id="stats-run-section" style="display:none">
@@ -95,13 +95,13 @@
                 <div class="stats-section-title">Trophies</div>
                 <div class="trophy-grid" id="trophy-grid"></div>
             </div>
-            <button class="btn btn-main" id="stats-done" style="margin-top:18px">Done</button>
+            <button type="button" class="btn btn-main" id="stats-done" style="margin-top:18px">Done</button>
         </div>
     </div>
     <div id="level-select">
         <div class="card">
             <div class="ls-wrap">
-                <button class="ls-arrow" id="ls-prev" aria-label="Previous level">
+                <button type="button" class="ls-arrow" id="ls-prev" aria-label="Previous level">
                     <svg viewBox="0 0 24 24"><path d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
                 </button>
                 <div class="ls-card">
@@ -121,15 +121,15 @@
                     </div>
                     <div class="ls-title" id="ls-title">Jump Stack</div>
                 </div>
-                <button class="ls-arrow" id="ls-next" aria-label="Next level">
+                <button type="button" class="ls-arrow" id="ls-next" aria-label="Next level">
                     <svg viewBox="0 0 24 24"><path d="M8.59 16.59 10 18l6-6-6-6-1.41 1.41L13.17 12z"/></svg>
                 </button>
             </div>
             <div class="ls-dots" id="ls-dots"></div>
-            <button class="btn btn-main" id="ls-play" style="margin-top:20px">Play Now</button>
+            <button type="button" class="btn btn-main" id="ls-play" style="margin-top:20px">Play Now</button>
         </div>
     </div>
-    <div id="modal">
+    <div id="modal" role="dialog" aria-modal="true" aria-labelledby="mt">
         <div class="card">
             <div class="modal-avatar" id="modal-avatar">
                 <svg viewBox="0 0 60 60">
@@ -142,11 +142,11 @@
                 </svg>
             </div>
             <p id="mbrand" class="modal-brand"></p>
-            <h2 id="mt"></h2>
+            <h2 id="mt">Jump Stack</h2>
             <p id="ms"></p>
             <p id="mdetail" class="modal-detail"></p>
-            <button class="btn btn-main" id="mb" aria-label="main"></button>
-            <button class="btn btn-ghost" id="mb-levels" style="display:none" aria-label="ghost">Change Level</button>
+            <button type="button" class="btn btn-main" id="mb"></button>
+            <button type="button" class="btn btn-ghost" id="mb-levels" style="display:none">Change Level</button>
         </div>
     </div>
     <div id="bz-footer">Created by <a href="https://hellenicdev.eu">HellenicDev</a></div>
